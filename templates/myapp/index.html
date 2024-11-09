@@ -1,0 +1,138 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Breat Cancer Prediction</title>
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <!-- Favicon -->
+    
+        <button onclick="window.history.back();" class="back-button">
+          &#8592; Back
+        </button>
+      </div>
+    </nav>
+
+    <!-- Loader div -->
+   
+    <div class="container">
+      <h2>Breat Cancer prediction</h2>
+      <form id="prediction-form">
+        {% csrf_token %}
+        <label for="radius mean">Radius mean:</label>
+        <input
+          type="number"
+          id="rainfall"
+          name="rainfall"
+          required
+          min="12"
+          max="60"
+        />
+
+        <label for="texture_mean">Texture mean:</label>
+        <input
+          type="number"
+          id="fertilizer"
+          name="fertilizer"
+          required
+
+          min="0"
+          max="1"
+        />
+
+        <label for="perimeter_mean">Perimeter mean:</label>
+        <input
+          type="number"
+          id="temperature"
+          name="temperature"
+          required
+          min="21"
+          max="23"
+        />
+
+       
+
+        <input type="submit" value="Generate" />
+      </form>
+    </div>
+    <div
+      class="modal fade"
+      id="predictionResultModal"
+      tabindex="-1"
+      aria-labelledby="predictionResultLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="predictionResultLabel">
+              Prediction Result
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p id="predictionResultText">Loading prediction...</p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("#prediction-form").submit(function (event) {
+          event.preventDefault(); // Prevent form submission
+
+          // Show the loader
+          $(".loader").show();
+
+          // Send form data to server using AJAX
+          $.ajax({
+            type: "POST",
+            url: "/predict/",
+            data: $("#prediction-form").serialize(),
+            success: function (response) {
+              // Hide the loader
+              $(".loader").hide();
+
+              // Set the modal's body text and show the modal
+              $("#predictionResultText").text(
+                "Famous Artist: " +
+                  response.prediction[0]
+              );
+              $("#predictionResultModal").modal("show");
+            },
+            error: function (xhr, status, error) {
+              // Hide the loader
+              $(".loader").hide();
+
+              // Handle error
+              console.error(xhr.responseText);
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
